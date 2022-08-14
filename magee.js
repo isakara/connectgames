@@ -10,8 +10,11 @@ let health = 100;
 let maxHealth = 100;
 let space = 30;
 let maxSpace = 30;
+let spaceTier = 1;
+let spaceTierPrice = [5000, 10000, 15000, 20000, 25000];
+let spaceTierSpace = [10, 10, 10, 20, 20];
 let product = [];
-let heldProduct = [0,0,0,0,0,0];
+let heldProduct = [0, 0, 0, 0, 0, 0];
 
 let location = ['Berlin', 'London', 'Miami ', 'Sydney', 'Tokyo ', 'Moscow'];
 let city = location[0];
@@ -34,7 +37,7 @@ function onConnect()
 function setPrices()
 {
 	doDebt();
-	bankCalc();
+	bankCalcInterest();
 	product[0] = rndPrice(10, 60);
 	product[1] = rndPrice(70, 250);
 	product[2] = rndPrice(300, 900);
@@ -184,7 +187,24 @@ function drawBuy() { }
 
 function drawSell() { }
 
-function drawShop() { }
+function drawShop() {
+	clearScreen();
+	drawText("Welcome to Worldwide Shipping Authority.", 12, 1, 1);
+	drawText("You currently hold a Class " + spaceTier + " shipping license.", 12, 1, 2);
+	if (spaceTier == 6) { drawText("You hold the highest class!", 12, 1, 4); }
+	else {
+		drawText("Would you like to purchase the next license class?", 12, 1, 4);
+		drawText("Class: " + (spaceTier + 1), 12, 1, 5);
+		drawText("Price: " + spaceTierPrice[(spaceTier - 1)], 12, 1, 6);
+		drawText("Space: +" + spaceTierSpace[(spaceTier - 1)], 12, 1, 7);
+		if (cash <= spaceTierPrice[(spaceTier - 1)]) {
+			drawText("Press 'y' to purchase. (CAN'T AFFORD!)", 1, 1, 9);
+		}
+		else
+			drawText("Press 'y' to purchase.", 12, 1, 9);
+	}
+	drawText("Press 'b' to return.", 12, 1, 10);
+}
 
 function drawBank() {
 	clearScreen();
@@ -194,38 +214,44 @@ function drawBank() {
 	drawText("Please select from these services:", 12, 1, 5);
 	drawText("(D) Deposit", 12, 1, 6);
 	drawText("(W) Withdrawal", 12, 1, 7);
-	drawText("Press 'b' to go back.", 12, 1, 9);
+	drawText("Press 'b' to return.", 12, 1, 9);
 }
 
 function drawBankWithdrawl() {
-
+	clearScreen();
+	drawText("You have " + cash + " on hand.", 12, 1, 1);
+	drawText("Account Balance: " + bank, 12, 1, 2);
+	drawText("How much do you wish to withdraw?", 12, 1, 3);
+	drawText("Savings accrue 1.5% interest per day.", 12, 1, 4);
+	drawText("(A) 1000", 12, 1, 6);
+	drawText("(S) 5000", 12, 1, 7);
+	drawText("(D) 10000", 12, 1, 8);
+	drawText("(F) 30000", 12, 1, 9);
+	drawText("Press 'b' to return.", 12, 1, 11);
 }
 
 function drawBankDeposit() {
 	clearScreen();
 	drawText("You have " + cash + " on hand.", 12, 1, 1);
-	drawText("How much do you wish to deposit?", 12, 1, 2);
-	drawText("Savings accrue 1.5% interest per day.", 12, 1, 3)
-	drawText("(A) 1000", 12, 1, 5);
-	drawText("(S) 5000", 12, 1, 6);
-	drawText("(D) 10000", 12, 1, 7);
-	drawText("(F) 30000", 12, 1, 8);
-	drawText("Press 'b' to return.", 12, 1, 10);
+	drawText("Account Balance: " + bank, 12, 1, 2);
+	drawText("How much do you wish to deposit?", 12, 1, 3);
+	drawText("Savings accrue 1.5% interest per day.", 12, 1, 4)
+	drawText("(A) 1000", 12, 1, 6);
+	drawText("(S) 5000", 12, 1, 7);
+	drawText("(D) 10000", 12, 1, 8);
+	drawText("(F) 30000", 12, 1, 9);
+	drawText("Press 'b' to return.", 12, 1, 11);
 }
 
 function drawLoan() {
 	clearScreen();
 	drawText("You owe " + debt + " to the loanshark.", 12, 1, 1);
 	drawText("How much do you wish to pay back?", 12, 1, 2);
-	drawText("(A) 1000", 12, 1, 4);
-	drawText("(S) 5000", 12, 1, 5);
-	drawText("(D) 10000", 12, 1, 6);
-	drawText("(F) 30000", 12, 1, 7);
 	debtCalc();
 	drawText("Press 'b' to return.", 12, 1, 10);
 }
 
-function bankCalc() {
+function bankCalcInterest() {
 	if (bank > 0) {
 		bank = Math.floor(bank * 1.015);
     }
@@ -292,11 +318,22 @@ function doDebt() {
 function onInput(key)
 {
 	switch (key) {
-		case 97:
-			if (room = 8) {
+		case 97: //a
+			if (room == 8 && (cash >= 1000)) {
 				cash = (cash - 1000);
 				bank = (bank + 1000);
+				drawBankDeposit();
 			}
+			if (room == 9 && (bank >= 1000)) {
+				cash = (cash + 1000);
+				bank = (bank - 1000);
+				drawBankWithdrawl();
+			}
+			if (room == 5 && (cash >= 1000)) {
+				cash = (cash - 1000);
+				debt = (debt - 1000);
+				drawLoan();
+            }
 			break;
 		case 98: //b
 			if (room != 0) {
@@ -327,6 +364,11 @@ function onInput(key)
 			clearScreen();
 			room = -1;
 			onConnect();
+			break;
+		case 115:
+			if (room == 0) {
+				room = 3;
+            }
 			break;
 		case 119: //w
 			if (room == 4) {
