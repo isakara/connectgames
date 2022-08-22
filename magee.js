@@ -21,7 +21,7 @@ let room = -1;
 const isProd = ["", "Product 1", "Product 2", "Product 3", "Product 4", "Product 5", "Product 6"];
 let prodSelected = isProd[0];
 let prodNum = 0;
-let maxBuy = 0;
+let maxBuy;
 
 function getName() { return 'Deal Wars'; }
 
@@ -185,7 +185,7 @@ function drawBuy() {
 	maxBuy = (maxBuyFunc(cash, product, prodNum));
 	drawText("Pssst, I got the goods, how much you need?", 12, 1, 1);
 	drawText("You have " + space + "\/" + maxSpace + " space left.", 12, 1, 2);
-	drawText("You have " + cash + " on hand.", 12, 1, 3);
+	drawText("You have " + cash + " cash on hand.", 12, 1, 3);
 	drawText("(1) " + isProd[1] + " - " + product[0], 12, 1, 5);
 	drawText("(2) " + isProd[2] + " - " + product[1], 12, 1, 6);
 	drawText("(3) " + isProd[3] + " - " + product[2], 12, 1, 7);
@@ -224,17 +224,14 @@ function drawBuy() {
 		drawText("Price is " + product[5] + " per unit.", 12, 1, 10);
 		}
 	else if (prodSelected == isProd[0]) { drawText("Press a number (1 - 6) to select a product.", 1, 1, 9); }
-	if (prodSelected != isProd[0] && (cash > product[(prodNum - 1)]) && (maxBuy < maxSpace )) {
+	if (prodSelected != isProd[0] && (cash > product[(prodNum - 1)])) {
 		drawText("                     ", 12, 27, 10);
 		drawText("You can afford: " + maxBuy, 12, 27, 10);
 	}
-	else if (maxBuy >= space) { drawText("You can afford: " + space + "(MAX)", 12, 27, 10); }
-	else if (prodSelected != isProd[0]) { drawText("You can afford: 0", 12, 27, 10); }
 	if (prodSelected != isProd[0]) {
 		drawText("(A) Buy one", 12, 1, 12);
 		drawText("(S) Buy ten", 12, 1, 13);
 		if (maxBuy == 0) { drawText("(D) Buy max (0)", 1, 1, 14); }
-		else if (maxBuy > space) { drawText("(D) Buy max (" + space + ")", 12, 1, 14); }
 		else drawText("(D) Buy max (" + maxBuy + ")", 12, 1, 14);
 	}
 	drawText("Press 'b' to go back", 12, 1, 17);
@@ -251,7 +248,7 @@ function drawSell() {
 	clearScreen();
 	drawText("Need to unload? I can take anything you got.", 12, 1, 1);
 	drawText("You have " + space + "\/" + maxSpace + " space left.", 12, 1, 2);
-	drawText("You have " + cash + " on hand.", 12, 1, 3);
+	drawText("You have " + cash + " cash on hand.", 12, 1, 3);
 	drawText("(1) " + isProd[1] + " - " + product[0], 12, 1, 5);
 	drawText("(2) " + isProd[2] + " - " + product[1], 12, 1, 6);
 	drawText("(3) " + isProd[3] + " - " + product[2], 12, 1, 7);
@@ -457,9 +454,9 @@ function onInput(key)
 			}
 			if (room == 1) {
 				if (cash > (product[(prodNum - 1)] * maxBuy) && (space = maxBuy) && (space != 0)) {
-					cash = cash - (product[(prodNum - 1)] * maxBuy);
-					heldProduct[(prodNum - 1)] = heldProduct[(prodNum - 1)] + space;
 					space = space - maxBuy;
+					heldProduct[(prodNum - 1)] = heldProduct[(prodNum - 1)] + maxBuy;
+					cash = cash - (product[(prodNum - 1)] * maxBuy);
 				}
 			}
 			if (room == 2) {
@@ -481,6 +478,7 @@ function onInput(key)
 			break;
 		case 114: //r
 			turn = 1;
+			cash = 2000;
 			debt = 5000;
 			heldProduct = [0, 0, 0, 0, 0, 0];
 			clearScreen();
