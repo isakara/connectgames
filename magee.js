@@ -2,29 +2,28 @@ let lastKey;
 let keyBuffer;
 
 let turn = 1;
-let maxTurn = 30;
+const maxTurn = 30;
 let cash = 2000;
 let bank = 0;
 let debt = 5000;
 let health = 100;
-let maxHealth = 100;
+const maxHealth = 100;
 let space = 30;
 let maxSpace = 30;
 let spaceTier = 1;
-let spaceTierPrice = [5000, 10000, 15000, 20000, 25000];
-let spaceTierSpace = [10, 10, 10, 20, 20];
+const spaceTierPrice = [5000, 10000, 15000, 20000, 25000];
+const spaceTierSpace = [10, 10, 10, 20, 20];
 let product = [];
 let heldProduct = [0, 0, 0, 0, 0, 0];
-
-let location = ['Berlin', 'London', 'Miami ', 'Sydney', 'Tokyo ', 'Moscow'];
+const location = ['Berlin', 'London', 'Miami ', 'Sydney', 'Tokyo ', 'Moscow'];
 let city = location[0];
-
 let room = -1;
+const isProd = ["", "Product 1", "Product 2", "Product 3", "Product 4", "Product 5", "Product 6"];
+let prodSelected = isProd[0];
+let prodNum = 0;
+let maxBuy = 0;
 
-function getName()
-{
-	return 'Magee';
-}
+function getName() { return 'Deal Wars'; }
 
 function onConnect()
 {
@@ -82,12 +81,12 @@ function drawInventory()
 {
 	drawBox(12, 2, 8, 25, 12);
 	drawText("INVENTORY", 12, 10, 9);
-	drawText("   Product 1 - " + heldProduct[0], 12, 3, 11);
-	drawText("   Product 2 - " + heldProduct[1], 12, 3, 12);
-	drawText("   Product 3 - " + heldProduct[2], 12, 3, 13);
-	drawText("   Product 4 - " + heldProduct[3], 12, 3, 14);
-	drawText("   Product 5 - " + heldProduct[4], 12, 3, 15);
-	drawText("   Product 6 - " + heldProduct[5], 12, 3, 16);
+	drawText("   " + isProd[1] + " - " + heldProduct[0], 12, 3, 11);
+	drawText("   " + isProd[2] + " - " + heldProduct[1], 12, 3, 12);
+	drawText("   " + isProd[3] + " - " + heldProduct[2], 12, 3, 13);
+	drawText("   " + isProd[4] + " - " + heldProduct[3], 12, 3, 14);
+	drawText("   " + isProd[5] + " - " + heldProduct[4], 12, 3, 15);
+	drawText("   " + isProd[6] + " - " + heldProduct[5], 12, 3, 16);
 	drawText("Space: " + space + "\/" + maxSpace, 12, 8, 18);
 }
 
@@ -101,12 +100,12 @@ function drawSales()
 	drawText("     ", 12, 42, 14);
 	drawText("     ", 12, 42, 15);
 	drawText("     ", 12, 42, 16);
-	drawText("   Product 1 - " + product[0], 12, 30, 11);
-	drawText("   Product 2 - " + product[1], 12, 30, 12);
-	drawText("   Product 3 - " + product[2], 12, 30, 13);
-	drawText("   Product 4 - " + product[3], 12, 30, 14);
-	drawText("   Product 5 - " + product[4], 12, 30, 15);
-	drawText("   Product 6 - " + product[5], 12, 30, 16);
+	drawText("   " + isProd[1] + " - " + product[0], 12, 30, 11);
+	drawText("   " + isProd[2] + " - " + product[1], 12, 30, 12);
+	drawText("   " + isProd[3] + " - " + product[2], 12, 30, 13);
+	drawText("   " + isProd[4] + " - " + product[3], 12, 30, 14);
+	drawText("   " + isProd[5] + " - " + product[4], 12, 30, 15);
+	drawText("   " + isProd[6] + " - " + product[5], 12, 30, 16);
 	drawText("  (Z) Buy    (X) Sell", 12, 30, 18);
 }
 
@@ -146,15 +145,13 @@ function onUpdate()
 		case 9:
 			drawBankWithdrawl();
 	}
-	if (turn > 30) {
-		room = 7;
-    }
+	if (turn > 30) { room = 7; }
 }
 
 function drawTitle() {
-	drawText("████████▄     ▄████████    ▄████████  ▄█      ", 9, 1, 1);
-	drawText("███   ▀███   ███    ███   ███    ███ ███      ", 9, 1, 2);
-	drawText("███    ███   ███    █▀    ███    ███ ███      ", 9, 1, 3);
+	drawText("████████▄     ▄████████    ▄████████  ▄█    by", 9, 1, 1);
+	drawText("███   ▀███   ███    ███   ███    ███ ███  Leigh Magee", 9, 1, 2);
+	drawText("███    ███   ███    █▀    ███    ███ ███      2022", 9, 1, 3);
 	drawText("███    ███  ▄███▄▄▄       ███    ███ ███      ", 9, 1, 4);
 	drawText("███    ███ ▀▀███▀▀▀     ▀███████████ ███      ", 9, 1, 5);
 	drawText("███    ███   ███    █▄    ███    ███ ███      ", 9, 1, 6);
@@ -183,9 +180,124 @@ function drawMain()
 	drawSales();
 }
 
-function drawBuy() { }
+function drawBuy() {
+	clearScreen();
+	maxBuy = (maxBuyFunc(cash, product, prodNum));
+	drawText("Pssst, I got the goods, how much you need?", 12, 1, 1);
+	drawText("You have " + space + "\/" + maxSpace + " space left.", 12, 1, 2);
+	drawText("You have " + cash + " on hand.", 12, 1, 3);
+	drawText("(1) " + isProd[1] + " - " + product[0], 12, 1, 5);
+	drawText("(2) " + isProd[2] + " - " + product[1], 12, 1, 6);
+	drawText("(3) " + isProd[3] + " - " + product[2], 12, 1, 7);
+	drawText("(4) " + isProd[4] + " - " + product[3], 12, 25, 5);
+	drawText("(5) " + isProd[5] + " - " + product[4], 12, 25, 6);
+	drawText("(6) " + isProd[6] + " - " + product[5], 12, 25, 7);
 
-function drawSell() { }
+	if (prodSelected == isProd[1]) {
+		prodNum = 1;
+		drawText("You have selected " + isProd[1], 12, 1, 9);
+		drawText("Price is " + product[0] + " per unit.", 12, 1, 10);
+	}
+	if (prodSelected == isProd[2]) {
+		prodNum = 2;
+		drawText("You have selected " + isProd[2], 12, 1, 9);
+		drawText("Price is " + product[1] + " per unit.", 12, 1, 10);
+	}
+	if (prodSelected == isProd[3]) {
+		prodNum = 3;
+		drawText("You have selected " + isProd[3], 12, 1, 9);
+		drawText("Price is " + product[2] + " per unit.", 12, 1, 10);
+	}
+	if (prodSelected == isProd[4]) {
+		prodNum = 4;
+		drawText("You have selected " + isProd[4], 12, 1, 9);
+		drawText("Price is " + product[3] + " per unit.", 12, 1, 10);
+	}
+	if (prodSelected == isProd[5]) {
+		prodNum = 5;
+		drawText("You have selected " + isProd[5], 12, 1, 9);
+		drawText("Price is " + product[4] + " per unit.", 12, 1, 10);
+	}
+	if (prodSelected == isProd[6]) {
+		prodNum = 6;
+		drawText("You have selected " + isProd[6], 12, 1, 9);
+		drawText("Price is " + product[5] + " per unit.", 12, 1, 10);
+		}
+	else if (prodSelected == isProd[0]) { drawText("Press a number (1 - 6) to select a product.", 1, 1, 9); }
+	if (prodSelected != isProd[0] && (cash > product[(prodNum - 1)]) && (maxBuy < maxSpace )) {
+		drawText("                     ", 12, 27, 10);
+		drawText("You can afford: " + maxBuy, 12, 27, 10);
+	}
+	else if (maxBuy >= space) { drawText("You can afford: " + space + "(MAX)", 12, 27, 10); }
+	else if (prodSelected != isProd[0]) { drawText("You can afford: 0", 12, 27, 10); }
+	if (prodSelected != isProd[0]) {
+		drawText("(A) Buy one", 12, 1, 12);
+		drawText("(S) Buy ten", 12, 1, 13);
+		if (maxBuy == 0) { drawText("(D) Buy max (0)", 1, 1, 14); }
+		else if (maxBuy > space) { drawText("(D) Buy max (" + space + ")", 12, 1, 14); }
+		else drawText("(D) Buy max (" + maxBuy + ")", 12, 1, 14);
+	}
+	drawText("Press 'b' to go back", 12, 1, 17);
+}
+
+function maxBuyFunc(c, p, n) {
+	let mb = Math.floor(c / p[(n - 1)]);
+	if (mb >= space) { return space; }
+	else
+		return mb;
+}
+
+function drawSell() {
+	clearScreen();
+	drawText("Need to unload? I can take anything you got.", 12, 1, 1);
+	drawText("You have " + space + "\/" + maxSpace + " space left.", 12, 1, 2);
+	drawText("You have " + cash + " on hand.", 12, 1, 3);
+	drawText("(1) " + isProd[1] + " - " + product[0], 12, 1, 5);
+	drawText("(2) " + isProd[2] + " - " + product[1], 12, 1, 6);
+	drawText("(3) " + isProd[3] + " - " + product[2], 12, 1, 7);
+	drawText("(4) " + isProd[4] + " - " + product[3], 12, 25, 5);
+	drawText("(5) " + isProd[5] + " - " + product[4], 12, 25, 6);
+	drawText("(6) " + isProd[6] + " - " + product[5], 12, 25, 7);
+	if (prodSelected == isProd[1]) {
+		prodNum = 1;
+		drawText("You have selected " + isProd[1], 12, 1, 9);
+		drawText("Price is " + product[0] + " per unit.", 12, 1, 10);
+	}
+	if (prodSelected == isProd[2]) {
+		prodNum = 2;
+		drawText("You have selected " + isProd[2], 12, 1, 9);
+		drawText("Price is " + product[1] + " per unit.", 12, 1, 10);
+	}
+	if (prodSelected == isProd[3]) {
+		prodNum = 3;
+		drawText("You have selected " + isProd[3], 12, 1, 9);
+		drawText("Price is " + product[2] + " per unit.", 12, 1, 10);
+	}
+	if (prodSelected == isProd[4]) {
+		prodNum = 4;
+		drawText("You have selected " + isProd[4], 12, 1, 9);
+		drawText("Price is " + product[3] + " per unit.", 12, 1, 10);
+	}
+	if (prodSelected == isProd[5]) {
+		prodNum = 5;
+		drawText("You have selected " + isProd[5], 12, 1, 9);
+		drawText("Price is " + product[4] + " per unit.", 12, 1, 10);
+	}
+	if (prodSelected == isProd[6]) {
+		prodNum = 6;
+		drawText("You have selected " + isProd[6], 12, 1, 9);
+		drawText("Price is " + product[5] + " per unit.", 12, 1, 10);
+	}
+	else if (prodSelected == isProd[0]) { drawText("Press a number (1 - 6) to select a product.", 1, 1, 9); }
+	if (prodSelected != isProd[0] && (heldProduct[(prodNum - 1)] != 0)) { drawText("You have: " + heldProduct[prodNum - 1], 12, 27, 10); }
+	else if (prodSelected != isProd[0]) { drawText("You have: 0", 12, 27, 10); }
+	if (prodSelected != isProd[0]) {
+		drawText("(A) Sell one", 12, 1, 12);
+		drawText("(S) Sell ten", 12, 1, 13);
+		drawText("(D) Sell max (" + heldProduct[(prodNum - 1)] + ")", 12, 1, 14);
+	}
+	drawText("Press 'b' to go back", 12, 1, 17);
+}
 
 function drawShop() {
 	clearScreen();
@@ -197,11 +309,8 @@ function drawShop() {
 		drawText("Class: " + (spaceTier + 1), 12, 1, 5);
 		drawText("Price: " + spaceTierPrice[(spaceTier - 1)], 12, 1, 6);
 		drawText("Space: +" + spaceTierSpace[(spaceTier - 1)], 12, 1, 7);
-		if (cash <= spaceTierPrice[(spaceTier - 1)]) {
-			drawText("Press 'y' to purchase. (CAN'T AFFORD!)", 1, 1, 9);
-		}
-		else
-			drawText("Press 'y' to purchase.", 12, 1, 9);
+		if (cash <= spaceTierPrice[(spaceTier - 1)]) { drawText("Press 'y' to purchase. (CAN'T AFFORD!)", 1, 1, 9);	}
+		else drawText("Press 'y' to purchase.", 12, 1, 9);
 	}
 	drawText("Press 'b' to return.", 12, 1, 10);
 }
@@ -252,37 +361,20 @@ function drawLoan() {
 }
 
 function bankCalcInterest() {
-	if (bank > 0) {
-		bank = Math.floor(bank * 1.015);
-    }
+	if (bank > 0) {	bank = Math.floor(bank * 1.015); }
 }
 
 function debtCalc() {
-	if ((cash - 1000) < 0) {
-		drawText("(A) 1000 (CAN'T AFFORD!)", 1, 1, 4);
-	}
-	else 
-		drawText("(A) 1000", 12, 1, 4);
-	if ((cash - 5000) < 0) {
-		drawText("(S) 5000 (CAN'T AFFORD!)", 1, 1, 5);
-	}
-	else
-		drawText("(S) 5000", 12, 1, 5);
-	if ((cash - 10000) < 0) {
-		drawText("(D) 10000 (CAN'T AFFORD!)", 1, 1, 6);
-	}
-	else
-		drawText("(D) 1000", 12, 1, 6);
-	if ((cash - 30000) < 0) {
-		drawText("(F) 30000 (CAN'T AFFORD!", 1, 1, 7);
-	}
-	else
-		drawText("(F) 30000", 12, 1, 7);
-	if ((cash - debt) < 0) {
-		drawText("(G) Everything (CAN'T AFFORD!)", 1, 1, 8);
-	}
-	else
-		drawText("(G) Everything (" + debt + ")", 12, 1, 8);
+	if ((cash - 1000) < 0) { drawText("(A) 1000 (CAN'T AFFORD!)", 1, 1, 4); }
+	else drawText("(A) 1000", 12, 1, 4);
+	if ((cash - 5000) < 0) { drawText("(S) 5000 (CAN'T AFFORD!)", 1, 1, 5); }
+	else drawText("(S) 5000", 12, 1, 5);
+	if ((cash - 10000) < 0) { drawText("(D) 10000 (CAN'T AFFORD!)", 1, 1, 6); }
+	else drawText("(D) 1000", 12, 1, 6);
+	if ((cash - 30000) < 0) { drawText("(F) 30000 (CAN'T AFFORD!", 1, 1, 7); }
+	else drawText("(F) 30000", 12, 1, 7);
+	if ((cash - debt) < 0) { drawText("(G) Everything (CAN'T AFFORD!)", 1, 1, 8); }
+	else drawText("(G) Everything (" + debt + ")", 12, 1, 8);
 }
 function drawClinic() { }
 
@@ -333,10 +425,26 @@ function onInput(key)
 				cash = (cash - 1000);
 				debt = (debt - 1000);
 				drawLoan();
+			}
+			if (room == 1) {
+				if (cash > product[(prodNum - 1)] && (space != 0)) {
+					cash = (cash - product[(prodNum - 1)]);
+					heldProduct[(prodNum - 1)]++;
+					space--;
+                }
+			}
+			if (room == 2) {
+				if (heldProduct[(prodNum - 1)] != 0) {
+					cash = (cash + product[(prodNum - 1)]);
+					heldProduct[(prodNum - 1)]--;
+					space++;
+                }
             }
 			break;
 		case 98: //b
 			if (room != 0) {
+				prodSelected = 0;
+				prodNum = 0;
 				room = 0;
 			}
 			else if (room == 0) {
@@ -347,6 +455,20 @@ function onInput(key)
 			if (room == 4) {
 				room = 8;
 			}
+			if (room == 1) {
+				if (cash > (product[(prodNum - 1)] * maxBuy) && (space = maxBuy) && (space != 0)) {
+					cash = cash - (product[(prodNum - 1)] * maxBuy);
+					heldProduct[(prodNum - 1)] = heldProduct[(prodNum - 1)] + space;
+					space = space - maxBuy;
+				}
+			}
+			if (room == 2) {
+				if (heldProduct[(prodNum - 1)] != 0) {
+					cash = cash + (product[(prodNum - 1)] * heldProduct[(prodNum - 1)]);
+					space = space + heldProduct[(prodNum - 1)];
+					heldProduct[(prodNum - 1)] = 0;
+                }
+            }
 			break;
 		case 108: //l
 			room = 5;
@@ -365,9 +487,23 @@ function onInput(key)
 			room = -1;
 			onConnect();
 			break;
-		case 115:
+		case 115: //s
 			if (room == 0) {
 				room = 3;
+			}
+			if (room == 1) {
+				if (cash > (product[(prodNum - 1)] * 10) && (space >= 10)) {
+					cash = (cash - (product[(prodNum - 1)] * 10));
+					heldProduct[(prodNum - 1)] = (heldProduct[(prodNum - 1)] + 10);
+					space = (space - 10);
+				}
+			}
+			if (room == 2) {
+				if (heldProduct[(prodNum - 1)] != 0 && heldProduct[(prodNum - 1)] >= 10) {
+					cash = (cash + (product[prodNum - 1] * 10));
+					heldProduct[(prodNum - 1)] = (heldProduct[(prodNum - 1)] - 10);
+					space = (space + 10);
+                }
             }
 			break;
 		case 119: //w
@@ -375,46 +511,86 @@ function onInput(key)
 				room = 9;
 			}
 			break;
+		case 120: //x
+			if (room == 0) {
+				room = 2;
+            }
+			break;
+		case 122: //z
+			if (room == 0) {
+				room = 1;
+            }
+			break;
 		case 49: //1
-			if (city != location[0]) {
-				city = location[0];
-				turn++;
-				setPrices();
+			if (room == 0) {
+				if (city != location[0]) {
+					city = location[0];
+					turn++;
+					setPrices();
+				}
 			}
+			if (room == 1 || room == 2) {
+				prodSelected = isProd[1];
+            }
 			break;
 		case 50: //2
-			if (city != location[1]) {
-				city = location[1];
-				turn++;
-				setPrices();
+			if (room == 0) {
+				if (city != location[1]) {
+					city = location[1];
+					turn++;
+					setPrices();
+				}
+			}
+			if (room == 1 || room == 2) {
+				prodSelected = isProd[2];
 			}
 			break;
 		case 51: //3
-			if (city != location[2]) {
-				city = location[2];
-				turn++;
-				setPrices();
+			if (room == 0) {
+				if (city != location[2]) {
+					city = location[2];
+					turn++;
+					setPrices();
+				}
+			}
+			if (room == 1 || room == 2) {
+				prodSelected = isProd[3];
 			}
 			break;
 		case 52: //4
-			if (city != location[3]) {
-				city = location[3];
-				turn++;
-				setPrices();
+			if (room == 0) {
+				if (city != location[3]) {
+					city = location[3];
+					turn++;
+					setPrices();
+				}
+			}
+			if (room == 1 || room == 2) {
+				prodSelected = isProd[4];
 			}
 			break;
 		case 53: //5
-			if (city != location[4]) {
-				city = location[4];
-				turn++;
-				setPrices();
+			if (room == 0) {
+				if (city != location[4]) {
+					city = location[4];
+					turn++;
+					setPrices();
+				}
+			}
+			if (room == 1 || room == 2) {
+				prodSelected = isProd[5];
 			}
 			break;
 		case 54: //6
-			if (city != location[5]) {
-				city = location[5];
-				turn++;
-				setPrices();
+			if (room == 0) {
+				if (city != location[5]) {
+					city = location[5];
+					turn++;
+					setPrices();
+				}
+			}
+			if (room == 1 || room == 2) {
+				prodSelected = isProd[6];
 			}
 			break;
     }
