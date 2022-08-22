@@ -12,5 +12,5 @@ You can also run these programs in an emulator found at https://stellartux.githu
 -------------------------------------------------------------------------------
 Deal Wars:
 
-https://stellartux.github.io/netronics-connect-online/?https://raw.githubusercontent.com/isakara/connectgames/main/magee.js
+https://stellartux.github.io/netronics-connect-online/?https://raw.githubusercontent.com/isakara/connectgames/main/dealwars.js
 -------------------------------------------------------------------------------
