@@ -3,7 +3,7 @@ let keyBuffer;
 
 let turn = 1;
 const maxTurn = 30;
-let cash = 200000;
+let cash = 2000;
 let bank = 0;
 let debt = 5000;
 let health = 100;
