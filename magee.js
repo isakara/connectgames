@@ -3,7 +3,7 @@ let keyBuffer;
 
 let turn = 1;
 const maxTurn = 30;
-let cash = 2000;
+let cash = 200000;
 let bank = 0;
 let debt = 5000;
 let health = 100;
@@ -318,8 +318,8 @@ function drawBank() {
 	drawText("Thank you for banking with us!", 12, 1, 2);
 	drawText("Customer Account: #2264854\/B29", 12, 1, 3);
 	drawText("Please select from these services:", 12, 1, 5);
-	drawText("(D) Deposit", 12, 1, 6);
-	drawText("(W) Withdrawal", 12, 1, 7);
+	drawText("(1) Deposit", 12, 1, 6);
+	drawText("(2) Withdrawal", 12, 1, 7);
 	drawText("Press 'b' to return.", 12, 1, 9);
 }
 
@@ -367,7 +367,7 @@ function debtCalc() {
 	if ((cash - 5000) < 0) { drawText("(S) 5000 (CAN'T AFFORD!)", 1, 1, 5); }
 	else drawText("(S) 5000", 12, 1, 5);
 	if ((cash - 10000) < 0) { drawText("(D) 10000 (CAN'T AFFORD!)", 1, 1, 6); }
-	else drawText("(D) 1000", 12, 1, 6);
+	else drawText("(D) 10000", 12, 1, 6);
 	if ((cash - 30000) < 0) { drawText("(F) 30000 (CAN'T AFFORD!", 1, 1, 7); }
 	else drawText("(F) 30000", 12, 1, 7);
 	if ((cash - debt) < 0) { drawText("(G) Everything (CAN'T AFFORD!)", 1, 1, 8); }
@@ -418,13 +418,13 @@ function onInput(key)
 				bank = (bank - 1000);
 				drawBankWithdrawl();
 			}
-			if (room == 5 && (cash >= 1000)) {
+			if (room == 5 && (debt > 1000) && (cash >= 1000)) {
 				cash = (cash - 1000);
 				debt = (debt - 1000);
 				drawLoan();
 			}
 			if (room == 1) {
-				if (cash > product[(prodNum - 1)] && (space != 0)) {
+				if (cash >= product[(prodNum - 1)] && (space != 0)) {
 					cash = (cash - product[(prodNum - 1)]);
 					heldProduct[(prodNum - 1)]++;
 					space--;
@@ -449,11 +449,23 @@ function onInput(key)
             }
 			break;
 		case 100: //d
-			if (room == 4) {
-				room = 8;
+			if (room == 8 && (cash >= 10000)) {
+				cash = (cash - 10000);
+				bank = (bank + 10000);
+				drawBankDeposit();
+			}
+			if (room == 9 && (bank >= 10000)) {
+				cash = (cash + 10000);
+				bank = (bank - 10000);
+				drawBankWithdrawl();
+			}
+			if (room == 5 && (debt > 10000) && (cash >= 10000)) {
+				cash = (cash - 10000);
+				debt = (debt - 10000);
+				drawLoan();
 			}
 			if (room == 1) {
-				if (cash > (product[(prodNum - 1)] * maxBuy) && (space = maxBuy) && (space != 0)) {
+				if (cash >= (product[(prodNum - 1)] * maxBuy) && (space != 0)) {
 					space = space - maxBuy;
 					heldProduct[(prodNum - 1)] = heldProduct[(prodNum - 1)] + maxBuy;
 					cash = cash - (product[(prodNum - 1)] * maxBuy);
@@ -466,6 +478,30 @@ function onInput(key)
 					heldProduct[(prodNum - 1)] = 0;
                 }
             }
+			break;
+		case 102: //f
+			if (room == 5 && (debt > 30000) && (cash >= 30000)) {
+				cash = (cash - 30000);
+				debt = (debt - 30000);
+				drawLoan();
+			}
+			if (room == 8 && (cash >= 30000)) {
+				cash = (cash - 30000);
+				bank = (bank + 30000);
+				drawBankDeposit();
+			}
+			if (room == 9 && (bank >= 30000)) {
+				cash = (cash + 30000);
+				bank = (bank - 30000);
+				drawBankWithdrawl();
+			}
+			break;
+		case 103: //g
+			if (room == 5 && cash >= debt) {
+				cash = (cash - debt);
+				debt = 0;
+				drawLoan();
+			}
 			break;
 		case 108: //l
 			room = 5;
@@ -489,8 +525,23 @@ function onInput(key)
 			if (room == 0) {
 				room = 3;
 			}
+			if (room == 8 && (cash >= 5000)) {
+				cash = (cash - 5000);
+				bank = (bank + 5000);
+				drawBankDeposit();
+			}
+			if (room == 9 && (bank >= 5000)) {
+				cash = (cash + 5000);
+				bank = (bank - 5000);
+				drawBankWithdrawl();
+			}
+			if (room == 5 && (debt > 5000) && (cash >= 5000)) {
+				cash = (cash - 5000);
+				debt = (debt - 5000);
+				drawLoan();
+			}
 			if (room == 1) {
-				if (cash > (product[(prodNum - 1)] * 10) && (space >= 10)) {
+				if (cash >= (product[(prodNum - 1)] * 10) && (space >= 10)) {
 					cash = (cash - (product[(prodNum - 1)] * 10));
 					heldProduct[(prodNum - 1)] = (heldProduct[(prodNum - 1)] + 10);
 					space = (space - 10);
@@ -504,14 +555,16 @@ function onInput(key)
                 }
             }
 			break;
-		case 119: //w
-			if (room == 4) {
-				room = 9;
-			}
-			break;
 		case 120: //x
 			if (room == 0) {
 				room = 2;
+            }
+			break;
+		case 121:
+			if (room == 3 && (cash > spaceTierPrice[spaceTier - 1])) {
+				maxSpace = maxSpace + spaceTierSpace[(spaceTier - 1)];
+				space = space + spaceTierSpace[(spaceTier - 1)];
+				spaceTier++;
             }
 			break;
 		case 122: //z
@@ -527,6 +580,9 @@ function onInput(key)
 					setPrices();
 				}
 			}
+			if (room == 4) {
+				room = 8;
+			}
 			if (room == 1 || room == 2) {
 				prodSelected = isProd[1];
             }
@@ -538,6 +594,9 @@ function onInput(key)
 					turn++;
 					setPrices();
 				}
+			}
+			if (room == 4) {
+				room = 9;
 			}
 			if (room == 1 || room == 2) {
 				prodSelected = isProd[2];
