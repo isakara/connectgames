@@ -1,5 +1,5 @@
-let lastKey;
-let keyBuffer;
+//let lastKey;
+//let keyBuffer;
 
 let turn = 1;
 const maxTurn = 30;
@@ -27,8 +27,8 @@ function getName() { return 'Deal Wars'; }
 
 function onConnect()
 {
-	lastKey = '';
-	keyBuffer = loadData();
+	//lastKey = '';
+	//keyBuffer = loadData();
 	clearScreen();
 	setPrices();
 }
@@ -234,7 +234,7 @@ function drawBuy() {
 		if (maxBuy == 0) { drawText("(D) Buy max (0)", 1, 1, 14); }
 		else drawText("(D) Buy max (" + maxBuy + ")", 12, 1, 14);
 	}
-	drawText("Press 'b' to go back", 12, 1, 17);
+	drawText("Press 'b' to return", 12, 1, 17);
 }
 
 function maxBuyFunc(c, p, n) {
@@ -293,7 +293,7 @@ function drawSell() {
 		drawText("(S) Sell ten", 12, 1, 13);
 		drawText("(D) Sell max (" + heldProduct[(prodNum - 1)] + ")", 12, 1, 14);
 	}
-	drawText("Press 'b' to go back", 12, 1, 17);
+	drawText("Press 'b' to return", 12, 1, 17);
 }
 
 function drawShop() {
@@ -309,7 +309,7 @@ function drawShop() {
 		if (cash <= spaceTierPrice[(spaceTier - 1)]) { drawText("Press 'y' to purchase. (CAN'T AFFORD!)", 1, 1, 9);	}
 		else drawText("Press 'y' to purchase.", 12, 1, 9);
 	}
-	drawText("Press 'b' to return.", 12, 1, 10);
+	drawText("Press 'b' to return.", 12, 1, 17);
 }
 
 function drawBank() {
@@ -320,7 +320,7 @@ function drawBank() {
 	drawText("Please select from these services:", 12, 1, 5);
 	drawText("(1) Deposit", 12, 1, 6);
 	drawText("(2) Withdrawal", 12, 1, 7);
-	drawText("Press 'b' to return.", 12, 1, 9);
+	drawText("Press 'b' to return.", 12, 1, 17);
 }
 
 function drawBankWithdrawl() {
@@ -333,7 +333,7 @@ function drawBankWithdrawl() {
 	drawText("(S) 5000", 12, 1, 7);
 	drawText("(D) 10000", 12, 1, 8);
 	drawText("(F) 30000", 12, 1, 9);
-	drawText("Press 'b' to return.", 12, 1, 11);
+	drawText("Press 'b' to return.", 12, 1, 17);
 }
 
 function drawBankDeposit() {
@@ -346,7 +346,7 @@ function drawBankDeposit() {
 	drawText("(S) 5000", 12, 1, 7);
 	drawText("(D) 10000", 12, 1, 8);
 	drawText("(F) 30000", 12, 1, 9);
-	drawText("Press 'b' to return.", 12, 1, 11);
+	drawText("Press 'b' to return.", 12, 1, 17);
 }
 
 function drawLoan() {
@@ -354,7 +354,7 @@ function drawLoan() {
 	drawText("You owe " + debt + " to the loanshark.", 12, 1, 1);
 	drawText("How much do you wish to pay back?", 12, 1, 2);
 	debtCalc();
-	drawText("Press 'b' to return.", 12, 1, 10);
+	drawText("Press 'b' to return.", 12, 1, 17);
 }
 
 function bankCalcInterest() {
@@ -373,7 +373,12 @@ function debtCalc() {
 	if ((cash - debt) < 0) { drawText("(G) Everything (CAN'T AFFORD!)", 1, 1, 8); }
 	else drawText("(G) Everything (" + debt + ")", 12, 1, 8);
 }
-function drawClinic() { }
+function drawClinic() {
+	clearScreen();
+	drawText("Your health is " + health + "\/" + maxHealth, 12, 1, 1);
+	if (health == maxHealth) { drawText("You are completely healthy, why are you here?", 12, 1, 2); }
+	drawText("Press 'b' to go back.", 12, 1, 17);
+}
 
 function drawEnd() {
 	clearScreen();
@@ -381,14 +386,19 @@ function drawEnd() {
 	else endWin();
 }
 
-function endWin() { }
+function endWin() {
+	drawText("Congratulations, you paid off your debt and survived!", 12, 1, 1);
+	drawText(" You finished with " + (cash + bank), 12, 1, 2);
+	drawText("Your final score is: " + Math.floor(((cash + bank) * 0.03) * 2) + " points", 12, 1, 4);
+	drawText("Press 'r' to restart", 12, 1, 17)
+}
 
 function endLoss() {
 	drawText("You failed to pay back all your debt!", 12, 1, 1);
 	drawText("The Loanshark kills you and takes all your money!", 12, 1, 2);
 	drawText("YOUR SCORE: 0", 12, 1, 3);
 	drawText("A score of 0 is not eligible for a high score entry!", 12, 1, 4)
-	drawText("Press 'r' to restart.", 12, 1, 6);
+	drawText("Press 'r' to restart.", 12, 1, 17);
 }
 
 function rndPrice(min, max)
@@ -397,11 +407,8 @@ function rndPrice(min, max)
 }
 
 function doDebt() {
-	if (debt == 0) {
-		return;
-	}
-	else
-		debt = (Math.floor(debt * 1.1));
+	if (debt == 0) { return; }
+	else debt = (Math.floor(debt * 1.1));
 }
 
 function onInput(key)
@@ -444,9 +451,10 @@ function onInput(key)
 				prodNum = 0;
 				room = 0;
 			}
-			else if (room == 0) {
-				room = 4;
-            }
+			else if (room == 0) { room = 4; }
+			break;
+		case 99:
+			if (room == 0) { room = 6 }
 			break;
 		case 100: //d
 			if (room == 8 && (cash >= 10000)) {
@@ -504,7 +512,7 @@ function onInput(key)
 			}
 			break;
 		case 108: //l
-			room = 5;
+			if (room == 0) { room = 5; }
 			break;
 		case 112: //p
 			if (room == -1) {
@@ -522,9 +530,7 @@ function onInput(key)
 			onConnect();
 			break;
 		case 115: //s
-			if (room == 0) {
-				room = 3;
-			}
+			if (room == 0) { room = 3; }
 			if (room == 8 && (cash >= 5000)) {
 				cash = (cash - 5000);
 				bank = (bank + 5000);
@@ -556,9 +562,7 @@ function onInput(key)
             }
 			break;
 		case 120: //x
-			if (room == 0) {
-				room = 2;
-            }
+			if (room == 0) { room = 2; }
 			break;
 		case 121:
 			if (room == 3 && (cash > spaceTierPrice[spaceTier - 1])) {
@@ -568,9 +572,7 @@ function onInput(key)
             }
 			break;
 		case 122: //z
-			if (room == 0) {
-				room = 1;
-            }
+			if (room == 0) { room = 1; }
 			break;
 		case 49: //1
 			if (room == 0) {
@@ -595,12 +597,8 @@ function onInput(key)
 					setPrices();
 				}
 			}
-			if (room == 4) {
-				room = 9;
-			}
-			if (room == 1 || room == 2) {
-				prodSelected = isProd[2];
-			}
+			if (room == 4) { room = 9; }
+			if (room == 1 || room == 2) { prodSelected = isProd[2];	}
 			break;
 		case 51: //3
 			if (room == 0) {
@@ -610,9 +608,7 @@ function onInput(key)
 					setPrices();
 				}
 			}
-			if (room == 1 || room == 2) {
-				prodSelected = isProd[3];
-			}
+			if (room == 1 || room == 2) { prodSelected = isProd[3];	}
 			break;
 		case 52: //4
 			if (room == 0) {
@@ -622,9 +618,7 @@ function onInput(key)
 					setPrices();
 				}
 			}
-			if (room == 1 || room == 2) {
-				prodSelected = isProd[4];
-			}
+			if (room == 1 || room == 2) { prodSelected = isProd[4];	}
 			break;
 		case 53: //5
 			if (room == 0) {
@@ -634,9 +628,7 @@ function onInput(key)
 					setPrices();
 				}
 			}
-			if (room == 1 || room == 2) {
-				prodSelected = isProd[5];
-			}
+			if (room == 1 || room == 2) { prodSelected = isProd[5]; }
 			break;
 		case 54: //6
 			if (room == 0) {
@@ -646,9 +638,7 @@ function onInput(key)
 					setPrices();
 				}
 			}
-			if (room == 1 || room == 2) {
-				prodSelected = isProd[6];
-			}
+			if (room == 1 || room == 2) { prodSelected = isProd[6];	}
 			break;
     }
 }
